@@ -9,6 +9,7 @@ add_executable(
     game-2022-06
     src/main.cpp
     src/physics.cpp
+    src/components.cpp
     )
 
 target_compile_features(

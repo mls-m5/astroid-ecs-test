@@ -1,3 +1,4 @@
+#include "components.h"
 #include "physics.h"
 #include "sdlpp/events.hpp"
 #include "sdlpp/render.hpp"
@@ -12,6 +13,8 @@ int main(int argc, char *argv[]) {
 
     auto registry = entt::registry{};
 
+    createAstroid(registry, {20, 20});
+
     for (bool running = true; running;) {
         for (auto o = sdl::pollEvent(); o; o = sdl::pollEvent()) {
             auto event = *o;
@@ -25,8 +28,12 @@ int main(int argc, char *argv[]) {
 
         physics.update(registry);
 
-        renderer.drawColor({255, 255, 255, 255});
-        renderer.drawLine(0, 0, 100, 100);
+        renderer.drawColor({0, 0, 0, 255});
+        renderer.fillRect();
+        physics.render(registry, renderer);
+
+        //        renderer.drawColor({255, 255, 255, 255});
+        //        renderer.drawLine(0, 0, 100, 100);
 
         renderer.present();
     }

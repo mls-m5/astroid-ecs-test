@@ -14,6 +14,7 @@ void Physics::update(entt::registry &reg) {
 void Physics::render(entt::registry &reg, sdl::Renderer &renderer) {
     auto view = reg.view<Position, Visible>();
 
+    renderer.drawColor({255, 255, 255, 255});
     for (auto [e, pos, vis] : view.each()) {
         renderer.drawLine(pos.x, pos.y, pos.x, pos.y + vis.size);
     }
