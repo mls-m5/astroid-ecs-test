@@ -8,6 +8,7 @@ add_subdirectory(lib/sdlpp)
 add_executable(
     game-2022-06
     src/main.cpp
+    src/physics.cpp
     )
 
 target_compile_features(
@@ -20,4 +21,5 @@ target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC
     sdlpp
+    EnTT::EnTT
     )
