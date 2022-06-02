@@ -28,3 +28,5 @@ struct Visible {
 };
 
 void createAstroid(entt::registry &, Position pos, Velocity vel = {});
+
+void createPlayer(entt::registry &, Position pos);

@@ -8,6 +8,8 @@
 #include <iostream>
 
 int main(int argc, char *argv[]) {
+    auto width = 300;
+    auto height = 300;
     auto window = sdl::Window{"game", 0, 0, 300, 300, SDL_WINDOW_SHOWN};
     auto renderer = sdl::Renderer{window, -1, SDL_RENDERER_ACCELERATED};
 
@@ -15,6 +17,7 @@ int main(int argc, char *argv[]) {
     auto registry = entt::registry{};
 
     createAstroid(registry, {20, 20}, {1, 1, .1});
+    createPlayer(registry, {width / 2.f, height / 2.f});
 
     using namespace std::chrono;
     auto lastFrameTime = high_resolution_clock::now();

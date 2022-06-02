@@ -107,6 +107,12 @@ void drawAstroid(sdl::RendererView renderer,
     astroidModel.draw(renderer, pos);
 }
 
+void drawShip(sdl::RendererView renderer,
+              const Position &pos,
+              const Visible &) {
+    shipModel.draw(renderer, pos);
+}
+
 void draw(entt::registry &reg, sdl::RendererView renderer) {
     auto view = reg.view<Position, Visible>();
 
