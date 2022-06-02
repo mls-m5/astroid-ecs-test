@@ -5,5 +5,4 @@
 
 struct Physics {
     void update(entt::registry &reg, double t);
-    void draw(entt::registry &reg, sdl::Renderer &renderer);
 };

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "entt/entity/registry.hpp"
+#include "sdlpp/render.hpp"
+#include <functional>
 
 struct Position {
     float x = 0;
@@ -20,6 +22,9 @@ struct Collidable {
 
 struct Visible {
     float size = 1;
+    std::function<void(
+        sdl::RendererView renderer, const Position &, const Visible &)>
+        f;
 };
 
 void createAstroid(entt::registry &, Position pos, Velocity vel = {});

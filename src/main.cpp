@@ -1,4 +1,5 @@
 #include "components.h"
+#include "drawcomponents.h"
 #include "physics.h"
 #include "sdlpp/events.hpp"
 #include "sdlpp/render.hpp"
@@ -40,7 +41,8 @@ int main(int argc, char *argv[]) {
 
         renderer.drawColor({0, 0, 0, 255});
         renderer.fillRect();
-        physics.draw(registry, renderer);
+
+        draw(registry, renderer);
 
         renderer.present();
     }

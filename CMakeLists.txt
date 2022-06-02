@@ -10,6 +10,7 @@ add_executable(
     src/main.cpp
     src/physics.cpp
     src/components.cpp
+    src/drawcomponents.cpp
     )
 
 target_compile_features(
