@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     auto physics = Physics{};
     auto registry = entt::registry{};
 
-    createAstroid(registry, {20, 20}, {1, 1});
+    createAstroid(registry, {20, 20}, {1, 1, .1});
 
     using namespace std::chrono;
     auto lastFrameTime = high_resolution_clock::now();
