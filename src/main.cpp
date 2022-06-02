@@ -1,4 +1,5 @@
 #include "components.h"
+#include "controls.h"
 #include "drawcomponents.h"
 #include "physics.h"
 #include "sdlpp/events.hpp"
@@ -7,6 +8,25 @@
 #include <chrono>
 #include <iostream>
 
+void handleControls(Controls &controls, const sdl::Event &event, bool state) {
+    auto keyEvent = event.key;
+
+    static auto map = std::vector{
+        std::pair{SDL_SCANCODE_LEFT, Controls::Left},
+        std::pair{SDL_SCANCODE_RIGHT, Controls::Right},
+        std::pair{SDL_SCANCODE_UP, Controls::Up},
+        std::pair{SDL_SCANCODE_DOWN, Controls::Down},
+        std::pair{SDL_SCANCODE_SPACE, Controls::Fire},
+    };
+
+    for (auto &c : map) {
+        if (c.first == keyEvent.keysym.scancode) {
+            controls.setKey(c.second, state);
+            break;
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
     auto width = 300;
     auto height = 300;
@@ -14,6 +34,7 @@ int main(int argc, char *argv[]) {
     auto renderer = sdl::Renderer{window, -1, SDL_RENDERER_ACCELERATED};
 
     auto physics = Physics{};
+    auto controls = Controls{};
     auto registry = entt::registry{};
 
     createAstroid(registry, {20, 20}, {1, 1, .1});
@@ -30,6 +51,12 @@ int main(int argc, char *argv[]) {
             case SDL_QUIT:
                 running = false;
                 break;
+            case SDL_KEYDOWN:
+                handleControls(controls, event, true);
+                break;
+            case SDL_KEYUP:
+                handleControls(controls, event, false);
+                break;
             }
         }
 
@@ -40,6 +67,7 @@ int main(int argc, char *argv[]) {
             100'000.;
         lastFrameTime = frameTime;
 
+        controls.update(registry);
         physics.update(registry, t);
 
         renderer.drawColor({0, 0, 0, 255});

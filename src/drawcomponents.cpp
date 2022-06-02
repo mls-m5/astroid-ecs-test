@@ -43,7 +43,7 @@ struct Model {
         }
 
         for (auto &p : points) {
-            p.x = (p.x - cx) / 2.;
+            p.x = (p.x - cx) / 3.;
             p.y -= cy;
         }
     }
@@ -86,8 +86,9 @@ auto astroidModel = Model{R"_(
 )_"};
 
 auto shipModel = Model{R"_(
-                 0
+      3                      1
 
+                 2
 
 
 
@@ -95,8 +96,7 @@ auto shipModel = Model{R"_(
 
 
 
-                 2
-      3                      1
+                 0
 )_"};
 
 } // namespace

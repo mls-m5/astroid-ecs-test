@@ -20,6 +20,13 @@ struct Collidable {
     float size = 1;
 };
 
+struct Controllable {
+    int controllNum = 0;
+    float rot = 0;
+    float throttle = 0;
+    bool fire = false;
+};
+
 struct Visible {
     float size = 1;
     std::function<void(

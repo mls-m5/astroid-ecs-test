@@ -16,4 +16,5 @@ void createPlayer(entt::registry &reg, Position pos) {
     reg.emplace<Position>(entity, pos);
     reg.emplace<Velocity>(entity);
     reg.emplace<Visible>(entity, Visible{1, drawShip});
+    reg.emplace<Controllable>(entity);
 }
