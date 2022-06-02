@@ -3,6 +3,7 @@
 #include "sdlpp/events.hpp"
 #include "sdlpp/render.hpp"
 #include "sdlpp/window.hpp"
+#include <chrono>
 #include <iostream>
 
 int main(int argc, char *argv[]) {
@@ -10,10 +11,12 @@ int main(int argc, char *argv[]) {
     auto renderer = sdl::Renderer{window, -1, SDL_RENDERER_ACCELERATED};
 
     auto physics = Physics{};
-
     auto registry = entt::registry{};
 
-    createAstroid(registry, {20, 20});
+    createAstroid(registry, {20, 20}, {1, 1});
+
+    using namespace std::chrono;
+    auto lastFrameTime = high_resolution_clock::now();
 
     for (bool running = true; running;) {
         for (auto o = sdl::pollEvent(); o; o = sdl::pollEvent()) {
@@ -26,14 +29,18 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        physics.update(registry);
+        auto frameTime = high_resolution_clock::now();
+
+        auto t =
+            duration_cast<microseconds>(frameTime - lastFrameTime).count() /
+            100'000.;
+        lastFrameTime = frameTime;
+
+        physics.update(registry, t);
 
         renderer.drawColor({0, 0, 0, 255});
         renderer.fillRect();
-        physics.render(registry, renderer);
-
-        //        renderer.drawColor({255, 255, 255, 255});
-        //        renderer.drawLine(0, 0, 100, 100);
+        physics.draw(registry, renderer);
 
         renderer.present();
     }

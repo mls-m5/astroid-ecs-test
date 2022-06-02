@@ -22,4 +22,4 @@ struct Visible {
     float size = 1;
 };
 
-void createAstroid(entt::registry &, Position pos);
+void createAstroid(entt::registry &, Position pos, Velocity vel = {});
