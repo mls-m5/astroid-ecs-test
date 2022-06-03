@@ -65,6 +65,10 @@ void Physics::update(entt::registry &reg, double t) {
 
     for (auto [e1, pos1, col] : reg.view<Position, Collidable>().each()) {
         for (auto [e2, pos2, proj] : reg.view<Position, Projectile>().each()) {
+            if (proj.damage == 0) {
+                continue;
+            }
+
             auto dx = pos2.x - pos1.x;
             auto dy = pos2.y - pos1.y;
 
@@ -72,9 +76,15 @@ void Physics::update(entt::registry &reg, double t) {
             if (dist2 < col.size * col.size) {
                 toRemove.push_back(e1);
                 toRemove.push_back(e2);
+                proj.damage = 0;
+
+                createExplosion(reg, pos1);
             }
         }
     }
 
-    reg.destroy(toRemove.begin(), toRemove.end());
+    std::sort(toRemove.begin(), toRemove.end());
+    auto it = std::unique(toRemove.begin(), toRemove.end());
+    toRemove.erase(it, toRemove.end());
+    reg.destroy(toRemove.begin(), toRemove.end()); // Somtimes causes segfault
 }

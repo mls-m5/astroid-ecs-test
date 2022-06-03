@@ -46,3 +46,17 @@ void createParticle(entt::registry &reg, Position pos, Velocity vel) {
     reg.emplace<Lifetime>(entity, Lifetime{10.});
     reg.emplace<Point>(entity);
 }
+
+void createExplosion(entt::registry &reg, Position pos) {
+    for (size_t i = 0; i < 100; ++i) {
+        auto entity = reg.create();
+
+        reg.emplace<Position>(entity, pos);
+        reg.emplace<Lifetime>(
+            entity, Lifetime{std::uniform_real_distribution<float>{2, 4}(gen)});
+        reg.emplace<Point>(entity);
+
+        auto dist = std::normal_distribution(0.f, 2.f);
+        reg.emplace<Velocity>(entity, dist(gen), dist(gen));
+    }
+}

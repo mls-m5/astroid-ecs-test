@@ -17,7 +17,7 @@ struct Velocity {
 };
 
 struct Collidable {
-    float size = 10;
+    float size = 10 / 2;
 };
 
 // Stuff that collides with collidables
@@ -59,3 +59,5 @@ void createPlayer(entt::registry &, Position pos);
 void createProjectile(entt::registry &, Position pos, Velocity vel);
 
 void createParticle(entt::registry &reg, Position pos, Velocity vel);
+
+void createExplosion(entt::registry &, Position pos);

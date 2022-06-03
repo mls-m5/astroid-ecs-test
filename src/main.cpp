@@ -6,7 +6,7 @@
 #include "sdlpp/render.hpp"
 #include "sdlpp/window.hpp"
 #include <chrono>
-#include <iostream>
+#include <random>
 
 void handleControls(Controls &controls, const sdl::Event &event, bool state) {
     auto keyEvent = event.key;
@@ -34,12 +34,23 @@ int main(int argc, char *argv[]) {
     auto renderer = sdl::Renderer{
         window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC};
 
-    auto physics =
-        Physics{static_cast<float>(width), static_cast<float>(height)};
-    auto controls = Controls{};
     auto registry = entt::registry{};
+    auto physics = Physics{
+        registry, static_cast<float>(width), static_cast<float>(height)};
+    auto controls = Controls{};
 
-    createAstroid(registry, {20, 20}, {1, 1, .1});
+    auto gen = std::mt19937{std::random_device{}()};
+    auto xdist = std::uniform_real_distribution(0.f, static_cast<float>(width));
+    auto ydist =
+        std::uniform_real_distribution(0.f, static_cast<float>(height));
+
+    auto dist = std::normal_distribution(0.f, 2.f);
+    for (size_t i = 0; i < 10; ++i) {
+        createAstroid(registry,
+                      Position{xdist(gen), ydist(gen)},
+                      {dist(gen), dist(gen), .1});
+    }
+
     createPlayer(registry, {width / 2.f, height / 2.f});
 
     using namespace std::chrono;
