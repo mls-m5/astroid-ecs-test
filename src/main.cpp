@@ -27,18 +27,10 @@ void handleControls(Controls &controls, const sdl::Event &event, bool state) {
     }
 }
 
-int main(int argc, char *argv[]) {
-    auto width = 300;
-    auto height = 300;
-    auto window = sdl::Window{"game", 0, 0, 300, 300, SDL_WINDOW_SHOWN};
-    auto renderer = sdl::Renderer{
-        window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC};
+const auto width = 300;
+const auto height = 300;
 
-    auto registry = entt::registry{};
-    auto physics = Physics{
-        registry, static_cast<float>(width), static_cast<float>(height)};
-    auto controls = Controls{};
-
+void startLevel(entt::registry &registry) {
     auto gen = std::mt19937{std::random_device{}()};
     auto xdist = std::uniform_real_distribution(0.f, static_cast<float>(width));
     auto ydist =
@@ -52,6 +44,19 @@ int main(int argc, char *argv[]) {
                       {dist(gen), dist(gen), dist(gen) / 10.f},
                       {10.f});
     }
+}
+
+int main(int argc, char *argv[]) {
+    auto window = sdl::Window{"game", 0, 0, 300, 300, SDL_WINDOW_SHOWN};
+    auto renderer = sdl::Renderer{
+        window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC};
+
+    auto registry = entt::registry{};
+    auto physics = Physics{
+        registry, static_cast<float>(width), static_cast<float>(height)};
+    auto controls = Controls{};
+
+    startLevel(registry);
 
     createPlayer(registry, {width / 2.f, height / 2.f});
 

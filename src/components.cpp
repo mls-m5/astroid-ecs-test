@@ -17,7 +17,6 @@ void createAstroid(entt::registry &reg,
     reg.emplace<Position>(entity, pos);
     reg.emplace<Velocity>(entity, vel);
     reg.emplace<Collidable>(entity, col);
-    //    reg.emplace<Visible>(entity, Visible{1, drawAstroid});
 }
 
 void createPlayer(entt::registry &reg, Position pos) {
@@ -38,7 +37,7 @@ void createProjectile(entt::registry &reg, Position pos, Velocity vel) {
     reg.emplace<Projectile>(entity);
     reg.emplace<Visible>(entity, Visible{1, drawProjectile});
     reg.emplace<Lifetime>(entity, Lifetime{10.f});
-    reg.emplace<ParticleSmoke>(entity, ParticleSmoke{});
+    //    reg.emplace<ParticleSmoke>(entity, ParticleSmoke{});
 }
 
 void createParticle(entt::registry &reg, Position pos, Velocity vel) {
