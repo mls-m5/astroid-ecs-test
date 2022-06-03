@@ -134,4 +134,8 @@ void draw(entt::registry &reg, sdl::RendererView renderer) {
     for (auto [e, pos, vis] : reg.view<Position, Visible>().each()) {
         vis.f(renderer, pos, vis);
     }
+
+    for (auto [e, pos, point] : reg.view<Position, Point>().each()) {
+        renderer.drawPointF(pos);
+    }
 }

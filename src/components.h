@@ -20,10 +20,6 @@ struct Collidable {
     float size = 1;
 };
 
-struct Projectile {
-    float damage = 1;
-};
-
 struct Lifetime {
     float t = 1;
 };
@@ -46,11 +42,15 @@ struct Point {
     float alpha = 1;
 };
 
+struct ParticleSmoke {
+    float interval = .1;
+    float nextT = 0;
+};
+
 void createAstroid(entt::registry &, Position pos, Velocity vel = {});
 
 void createPlayer(entt::registry &, Position pos);
 
-void createProjectile(entt::registry &,
-                      Position pos,
-                      Velocity vel,
-                      Projectile proj);
+void createProjectile(entt::registry &, Position pos, Velocity vel);
+
+void createParticle(entt::registry &reg, Position pos, Velocity vel);

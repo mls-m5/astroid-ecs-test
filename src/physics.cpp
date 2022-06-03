@@ -1,5 +1,12 @@
 #include "physics.h"
 #include "components.h"
+#include <random>
+
+namespace {
+
+auto gen = std::mt19937{std::random_device{}()};
+
+}
 
 void Physics::update(entt::registry &reg, double t) {
     for (auto [e, lifetime] : reg.view<Lifetime>().each()) {
@@ -10,7 +17,7 @@ void Physics::update(entt::registry &reg, double t) {
     }
 
     for (auto [e, con, pos, vel] :
-         reg.group<Controllable, Position, Velocity>().each()) {
+         reg.view<Controllable, Position, Velocity>().each()) {
         auto sx = std::sin(pos.a);
         auto sy = std::cos(pos.a);
         vel.rot = con.rot;
@@ -24,9 +31,13 @@ void Physics::update(entt::registry &reg, double t) {
             createProjectile(reg,
                              pos,
                              {static_cast<float>(vel.x + sx * 10.),
-                              static_cast<float>(vel.y + sy * 10.)},
-                             {});
+                              static_cast<float>(vel.y + sy * 10.)});
         }
+    }
+
+    for (auto [e, pos, proj] : reg.view<Position, ParticleSmoke>().each()) {
+        auto dist = std::normal_distribution<float>{0, 1};
+        createParticle(reg, pos, {dist(gen), dist(gen)});
     }
 
     for (auto [e, pos, vel] : reg.view<Position, Velocity>().each()) {
