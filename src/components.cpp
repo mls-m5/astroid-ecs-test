@@ -32,6 +32,7 @@ void createProjectile(entt::registry &reg, Position pos, Velocity vel) {
 
     reg.emplace<Position>(entity, pos);
     reg.emplace<Velocity>(entity, vel);
+    reg.emplace<Projectile>(entity);
     reg.emplace<Visible>(entity, Visible{1, drawProjectile});
     reg.emplace<Lifetime>(entity, Lifetime{10.f});
     reg.emplace<ParticleSmoke>(entity, ParticleSmoke{});

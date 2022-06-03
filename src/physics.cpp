@@ -30,8 +30,10 @@ void Physics::update(entt::registry &reg, double t) {
         if (con.fire) {
             createProjectile(reg,
                              pos,
-                             {static_cast<float>(vel.x + sx * 10.),
-                              static_cast<float>(vel.y + sy * 10.)});
+                             {
+                                 static_cast<float>(vel.x + sx * 10.),
+                                 static_cast<float>(vel.y + sy * 10.),
+                             });
         }
     }
 
@@ -58,4 +60,21 @@ void Physics::update(entt::registry &reg, double t) {
             pos.y -= _height + 10.f;
         }
     }
+
+    auto toRemove = std::vector<entt::entity>{};
+
+    for (auto [e1, pos1, col] : reg.view<Position, Collidable>().each()) {
+        for (auto [e2, pos2, proj] : reg.view<Position, Projectile>().each()) {
+            auto dx = pos2.x - pos1.x;
+            auto dy = pos2.y - pos1.y;
+
+            auto dist2 = dx * dx + dy * dy;
+            if (dist2 < col.size * col.size) {
+                toRemove.push_back(e1);
+                toRemove.push_back(e2);
+            }
+        }
+    }
+
+    reg.destroy(toRemove.begin(), toRemove.end());
 }

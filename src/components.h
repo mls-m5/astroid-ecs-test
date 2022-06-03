@@ -17,7 +17,12 @@ struct Velocity {
 };
 
 struct Collidable {
-    float size = 1;
+    float size = 10;
+};
+
+// Stuff that collides with collidables
+struct Projectile {
+    float damage = 1;
 };
 
 struct Lifetime {
