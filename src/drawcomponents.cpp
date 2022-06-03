@@ -48,11 +48,15 @@ struct Model {
         }
     }
 
-    void draw(sdl::RendererView &renderer, const Position &pos) const {
+    void draw(sdl::RendererView &renderer,
+              const Position &pos,
+              float scale = 1) const {
         auto sx = std::sin(pos.a);
         auto sy = std::cos(pos.a);
 
         auto transform = [&](Point p) {
+            p.x *= scale;
+            p.y *= scale;
             return Point{pos.x + p.x * sy + p.y * sx,
                          pos.y + p.y * sy - p.x * sx};
         };
@@ -113,8 +117,8 @@ auto projectileModel = Model{R"_(
 
 void drawAstroid(sdl::RendererView renderer,
                  const Position &pos,
-                 const Visible &vis) {
-    astroidModel.draw(renderer, pos);
+                 Collidable &col) {
+    astroidModel.draw(renderer, pos, col.size * .3);
 }
 
 void drawShip(sdl::RendererView renderer,
@@ -133,6 +137,10 @@ void draw(entt::registry &reg, sdl::RendererView renderer) {
     renderer.drawColor({255, 255, 255, 255});
     for (auto [e, pos, vis] : reg.view<Position, Visible>().each()) {
         vis.f(renderer, pos, vis);
+    }
+
+    for (auto [e, pos, col] : reg.view<Position, Collidable>().each()) {
+        drawAstroid(renderer, pos, col);
     }
 
     for (auto [e, pos, point] : reg.view<Position, Point>().each()) {

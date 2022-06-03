@@ -52,7 +52,10 @@ struct ParticleSmoke {
     float nextT = 0;
 };
 
-void createAstroid(entt::registry &, Position pos, Velocity vel = {});
+void createAstroid(entt::registry &,
+                   Position pos,
+                   Velocity vel = {},
+                   Collidable = {});
 
 void createPlayer(entt::registry &, Position pos);
 

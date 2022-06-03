@@ -8,13 +8,16 @@ auto gen = std::mt19937{std::random_device{}()};
 
 }
 
-void createAstroid(entt::registry &reg, Position pos, Velocity vel) {
+void createAstroid(entt::registry &reg,
+                   Position pos,
+                   Velocity vel,
+                   Collidable col) {
     auto entity = reg.create();
 
     reg.emplace<Position>(entity, pos);
     reg.emplace<Velocity>(entity, vel);
-    reg.emplace<Collidable>(entity);
-    reg.emplace<Visible>(entity, Visible{1, drawAstroid});
+    reg.emplace<Collidable>(entity, col);
+    //    reg.emplace<Visible>(entity, Visible{1, drawAstroid});
 }
 
 void createPlayer(entt::registry &reg, Position pos) {

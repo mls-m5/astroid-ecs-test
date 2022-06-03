@@ -45,10 +45,12 @@ int main(int argc, char *argv[]) {
         std::uniform_real_distribution(0.f, static_cast<float>(height));
 
     auto dist = std::normal_distribution(0.f, 2.f);
+    auto linear = std::uniform_real_distribution(0.f, 3.14f);
     for (size_t i = 0; i < 10; ++i) {
         createAstroid(registry,
-                      Position{xdist(gen), ydist(gen)},
-                      {dist(gen), dist(gen), .1});
+                      Position{xdist(gen), ydist(gen), linear(gen)},
+                      {dist(gen), dist(gen), dist(gen) / 10.f},
+                      {10.f});
     }
 
     createPlayer(registry, {width / 2.f, height / 2.f});

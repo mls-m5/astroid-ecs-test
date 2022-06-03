@@ -63,6 +63,8 @@ void Physics::update(entt::registry &reg, double t) {
 
     auto toRemove = std::vector<entt::entity>{};
 
+    auto vdist = std::normal_distribution(0.f, 2.f);
+
     for (auto [e1, pos1, col] : reg.view<Position, Collidable>().each()) {
         for (auto [e2, pos2, proj] : reg.view<Position, Projectile>().each()) {
             if (proj.damage == 0) {
@@ -79,6 +81,17 @@ void Physics::update(entt::registry &reg, double t) {
                 proj.damage = 0;
 
                 createExplosion(reg, pos1);
+
+                if (col.size > 3.f) {
+                    for (size_t i = 0; i < 3; ++i) {
+                        auto nx = vdist(gen);
+                        auto ny = vdist(gen);
+                        createAstroid(reg,
+                                      {pos1.x + nx * 2, pos1.y + ny * 2},
+                                      {vdist(gen), vdist(gen)},
+                                      Collidable{col.size / 2.f});
+                    }
+                }
             }
         }
     }
@@ -86,5 +99,5 @@ void Physics::update(entt::registry &reg, double t) {
     std::sort(toRemove.begin(), toRemove.end());
     auto it = std::unique(toRemove.begin(), toRemove.end());
     toRemove.erase(it, toRemove.end());
-    reg.destroy(toRemove.begin(), toRemove.end()); // Somtimes causes segfault
+    reg.destroy(toRemove.begin(), toRemove.end());
 }
