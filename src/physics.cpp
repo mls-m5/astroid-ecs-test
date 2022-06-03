@@ -6,7 +6,67 @@ namespace {
 
 auto gen = std::mt19937{std::random_device{}()};
 
+void handleCollisions(entt::registry &reg) {
+
+    auto toRemove = std::vector<entt::entity>{};
+
+    auto vdist = std::normal_distribution(0.f, 2.f);
+
+    auto isCollision = [](Position pos1, Position pos2, float size) {
+        auto dx = pos2.x - pos1.x;
+        auto dy = pos2.y - pos1.y;
+
+        auto dist2 = dx * dx + dy * dy;
+        return dist2 < size * size;
+    };
+
+    for (auto [e1, pos1, col] : reg.view<Position, Collidable>().each()) {
+        for (auto [e2, pos2, proj] : reg.view<Position, Projectile>().each()) {
+            if (proj.damage == 0) {
+                continue;
+            }
+
+            if (isCollision(pos1, pos2, col.size)) {
+                toRemove.push_back(e1);
+                toRemove.push_back(e2);
+                proj.damage = 0;
+
+                createExplosion(reg, pos1);
+
+                if (col.size > 3.f) {
+                    for (size_t i = 0; i < 3; ++i) {
+                        auto nx = vdist(gen);
+                        auto ny = vdist(gen);
+                        createAstroid(reg,
+                                      {pos1.x + nx * 2, pos1.y + ny * 2},
+                                      {vdist(gen), vdist(gen)},
+                                      Collidable{col.size / 2.f});
+                    }
+                }
+            }
+        }
+    }
+
+    for (auto [e1, pos1, col] : reg.view<Position, Collidable>().each()) {
+        for (auto [e2, pos2, proj] :
+             reg.view<Position, Controllable>().each()) {
+            if (isCollision(pos1, pos2, 5)) {
+                toRemove.push_back(e1);
+                toRemove.push_back(e2);
+
+                createExplosion(reg, pos1);
+                createExplosion(reg, pos2);
+            }
+        }
+    }
+
+    std::sort(toRemove.begin(), toRemove.end());
+    auto it = std::unique(toRemove.begin(), toRemove.end());
+    toRemove.erase(it, toRemove.end());
+    reg.destroy(toRemove.begin(), toRemove.end());
 }
+
+} // namespace
 
 void Physics::update(entt::registry &reg, double t) {
     for (auto [e, lifetime] : reg.view<Lifetime>().each()) {
@@ -61,43 +121,5 @@ void Physics::update(entt::registry &reg, double t) {
         }
     }
 
-    auto toRemove = std::vector<entt::entity>{};
-
-    auto vdist = std::normal_distribution(0.f, 2.f);
-
-    for (auto [e1, pos1, col] : reg.view<Position, Collidable>().each()) {
-        for (auto [e2, pos2, proj] : reg.view<Position, Projectile>().each()) {
-            if (proj.damage == 0) {
-                continue;
-            }
-
-            auto dx = pos2.x - pos1.x;
-            auto dy = pos2.y - pos1.y;
-
-            auto dist2 = dx * dx + dy * dy;
-            if (dist2 < col.size * col.size) {
-                toRemove.push_back(e1);
-                toRemove.push_back(e2);
-                proj.damage = 0;
-
-                createExplosion(reg, pos1);
-
-                if (col.size > 3.f) {
-                    for (size_t i = 0; i < 3; ++i) {
-                        auto nx = vdist(gen);
-                        auto ny = vdist(gen);
-                        createAstroid(reg,
-                                      {pos1.x + nx * 2, pos1.y + ny * 2},
-                                      {vdist(gen), vdist(gen)},
-                                      Collidable{col.size / 2.f});
-                    }
-                }
-            }
-        }
-    }
-
-    std::sort(toRemove.begin(), toRemove.end());
-    auto it = std::unique(toRemove.begin(), toRemove.end());
-    toRemove.erase(it, toRemove.end());
-    reg.destroy(toRemove.begin(), toRemove.end());
+    handleCollisions(reg);
 }
