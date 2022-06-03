@@ -14,13 +14,7 @@ struct Controls {
         Count,
     };
 
-    void setKey(Key key, bool state) {
-        states.at(key) = state;
-
-        throttle = states.at(Up) - states.at(Down);
-        rot = states.at(Right) - states.at(Left);
-        fire = states.at(Fire);
-    }
+    void setKey(Key key, bool state);
 
     std::array<int, Count> states;
 
@@ -28,5 +22,5 @@ struct Controls {
     float throttle = 0;
     bool fire = false;
 
-    void update(entt::registry &reg);
+    void update(entt::registry &reg) const;
 };

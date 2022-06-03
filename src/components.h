@@ -20,6 +20,11 @@ struct Collidable {
     float size = 1;
 };
 
+struct Projectile {
+    float damage = 1;
+    float lifetime = 1;
+};
+
 struct Controllable {
     int controllNum = 0;
     float rot = 0;
@@ -37,3 +42,8 @@ struct Visible {
 void createAstroid(entt::registry &, Position pos, Velocity vel = {});
 
 void createPlayer(entt::registry &, Position pos);
+
+void createProjectile(entt::registry &,
+                      Position pos,
+                      Velocity vel,
+                      Projectile proj);

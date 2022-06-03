@@ -18,3 +18,15 @@ void createPlayer(entt::registry &reg, Position pos) {
     reg.emplace<Visible>(entity, Visible{1, drawShip});
     reg.emplace<Controllable>(entity);
 }
+
+void createProjectile(entt::registry &reg,
+                      Position pos,
+                      Velocity vel,
+                      Projectile proj) {
+
+    auto entity = reg.create();
+
+    reg.emplace<Position>(entity, pos);
+    reg.emplace<Velocity>(entity, vel);
+    reg.emplace<Visible>(entity, Visible{1, drawProjectile});
+}

@@ -99,6 +99,16 @@ auto shipModel = Model{R"_(
                  0
 )_"};
 
+auto projectileModel = Model{R"_(
+    0
+
+
+
+
+  3 c 1
+    2
+)_"};
+
 } // namespace
 
 void drawAstroid(sdl::RendererView renderer,
@@ -111,6 +121,12 @@ void drawShip(sdl::RendererView renderer,
               const Position &pos,
               const Visible &) {
     shipModel.draw(renderer, pos);
+}
+
+void drawProjectile(sdl::RendererView renderer,
+                    const Position &pos,
+                    const Visible &) {
+    projectileModel.draw(renderer, pos);
 }
 
 void draw(entt::registry &reg, sdl::RendererView renderer) {

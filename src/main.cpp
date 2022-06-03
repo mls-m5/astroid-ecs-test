@@ -31,7 +31,8 @@ int main(int argc, char *argv[]) {
     auto width = 300;
     auto height = 300;
     auto window = sdl::Window{"game", 0, 0, 300, 300, SDL_WINDOW_SHOWN};
-    auto renderer = sdl::Renderer{window, -1, SDL_RENDERER_ACCELERATED};
+    auto renderer = sdl::Renderer{
+        window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC};
 
     auto physics = Physics{};
     auto controls = Controls{};

@@ -5,5 +5,8 @@
 
 void drawAstroid(sdl::RendererView renderer, const Position &, const Visible &);
 void drawShip(sdl::RendererView renderer, const Position &, const Visible &);
+void drawProjectile(sdl::RendererView renderer,
+                    const Position &,
+                    const Visible &);
 
 void draw(entt::registry &reg, sdl::RendererView renderer);
