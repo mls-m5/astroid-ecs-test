@@ -22,7 +22,10 @@ struct Collidable {
 
 struct Projectile {
     float damage = 1;
-    float lifetime = 1;
+};
+
+struct Lifetime {
+    float t = 1;
 };
 
 struct Controllable {
@@ -37,6 +40,10 @@ struct Visible {
     std::function<void(
         sdl::RendererView renderer, const Position &, const Visible &)>
         f;
+};
+
+struct Point {
+    float alpha = 1;
 };
 
 void createAstroid(entt::registry &, Position pos, Velocity vel = {});

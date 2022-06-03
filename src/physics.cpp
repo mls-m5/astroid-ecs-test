@@ -2,6 +2,12 @@
 #include "components.h"
 
 void Physics::update(entt::registry &reg, double t) {
+    for (auto [e, lifetime] : reg.view<Lifetime>().each()) {
+        lifetime.t -= t;
+        if (lifetime.t < 0) {
+            reg.destroy(e);
+        }
+    }
 
     for (auto [e, con, pos, vel] :
          reg.group<Controllable, Position, Velocity>().each()) {
@@ -27,5 +33,18 @@ void Physics::update(entt::registry &reg, double t) {
         pos.x += vel.x * t;
         pos.y += vel.y * t;
         pos.a += vel.rot * t;
+
+        if (pos.x < -10.f) {
+            pos.x += _width + 10.f;
+        }
+        else if (pos.x > _width + 10.f) {
+            pos.x -= _width + 10.f;
+        }
+        if (pos.y < -10.f) {
+            pos.y += _height + 10.f;
+        }
+        else if (pos.y > _width + 10.f) {
+            pos.y -= _height + 10.f;
+        }
     }
 }

@@ -130,10 +130,8 @@ void drawProjectile(sdl::RendererView renderer,
 }
 
 void draw(entt::registry &reg, sdl::RendererView renderer) {
-    auto view = reg.view<Position, Visible>();
-
     renderer.drawColor({255, 255, 255, 255});
-    for (auto [e, pos, vis] : view.each()) {
+    for (auto [e, pos, vis] : reg.view<Position, Visible>().each()) {
         vis.f(renderer, pos, vis);
     }
 }

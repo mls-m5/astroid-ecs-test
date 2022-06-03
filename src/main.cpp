@@ -34,7 +34,8 @@ int main(int argc, char *argv[]) {
     auto renderer = sdl::Renderer{
         window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC};
 
-    auto physics = Physics{};
+    auto physics =
+        Physics{static_cast<float>(width), static_cast<float>(height)};
     auto controls = Controls{};
     auto registry = entt::registry{};
 
