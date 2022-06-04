@@ -72,19 +72,34 @@ void setDead(entt::registry &reg, entt::entity entity) {
 }
 
 void createHomingMissiles(entt::registry &reg, Position pos, Velocity vel) {
-    for (auto [e, col, p] : reg.view<Collidable, Position>().each()) {
-        auto d = (pos - p).abs2();
+    auto dist = std::uniform_real_distribution{0.f, 1.9f};
+    auto norm = std::normal_distribution{0.f, .1f};
 
-        if (d < 200. * 200.) {
-            auto entity = reg.create();
+    auto num = 0;
 
-            reg.emplace<Position>(entity, pos);
-            reg.emplace<Velocity>(entity);
-            reg.emplace<Homing>(
-                entity, Homing{e, pos, vel, 1, 10.f / (std::sqrt(d) + 1)});
-            reg.emplace<Visible>(entity, Visible{1, drawProjectile});
-            reg.emplace<Projectile>(entity);
-            reg.emplace<ParticleSmoke>(entity);
+    for (size_t i = 0; i < 10; ++i) {
+        for (auto [e, col, p] : reg.view<Collidable, Position>().each()) {
+            auto d = (pos - p).abs2();
+
+            if (d < 200. * 200.) {
+                auto entity = reg.create();
+
+                auto v = Velocity{vel.x + norm(gen), vel.y + norm(gen)};
+
+                reg.emplace<Position>(entity, pos);
+                reg.emplace<Velocity>(entity);
+                reg.emplace<Homing>(
+                    entity,
+                    Homing{
+                        e, pos, v, 1.f + dist(gen), 10.f / (std::sqrt(d) + 1)});
+                reg.emplace<Visible>(entity, Visible{1, drawProjectile});
+                reg.emplace<Projectile>(entity);
+                reg.emplace<ParticleSmoke>(entity);
+                ++num;
+            }
+            if (num > 30) {
+                break;
+            }
         }
     }
 }

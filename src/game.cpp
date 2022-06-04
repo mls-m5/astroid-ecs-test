@@ -173,11 +173,28 @@ void Game::update(entt::registry &reg, double t) {
     for (auto [e, pos, vel, homing] :
          reg.view<Position, Velocity, Homing>().each()) {
         if (!reg.valid(homing.target)) {
-            reg.emplace<Dead>(e);
+            vel = {std::sin(pos.a) * 10.f, std::cos(pos.a) * 10.f};
+
+            auto dist = std::uniform_real_distribution{0.f, 20.f};
+            auto time = 10.f + dist(gen);
+            if (homing.timeLeft > 1) {
+                time = 0;
+            }
+            reg.erase<Homing>(e);
+            reg.emplace<Lifetime>(e,
+                                  Lifetime{
+                                      time,
+                                      true,
+                                  });
             continue;
         }
 
         homing.timeLeft -= homing.speed * t;
+
+        if (homing.timeLeft > 1.f) {
+            continue;
+        }
+
         auto targetPos = reg.get<Position>(homing.target);
         auto d = targetPos - homing.pos;
 
