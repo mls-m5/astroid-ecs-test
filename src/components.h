@@ -27,6 +27,7 @@ struct Projectile {
 
 struct Lifetime {
     float t = 1;
+    bool shouldExplode = false;
 };
 
 struct Controllable {
@@ -34,6 +35,7 @@ struct Controllable {
     float rot = 0;
     float throttle = 0;
     bool fire = false;
+    bool secondary = false;
 };
 
 struct Visible {
@@ -57,6 +59,15 @@ struct Weapon {
     float currentCooldown = cooldown;
 };
 
+struct SecondaryWeapon {
+    int num = 10;
+    int type = 0;
+};
+
+struct Dead {
+    char dummy = 0;
+};
+
 void createAstroid(entt::registry &,
                    Position pos,
                    Velocity vel = {},
@@ -66,6 +77,8 @@ void createPlayer(entt::registry &, Position pos);
 
 void createProjectile(entt::registry &, Position pos, Velocity vel);
 
-void createParticle(entt::registry &reg, Position pos, Velocity vel);
+void createParticle(entt::registry &, Position pos, Velocity vel);
 
 void createExplosion(entt::registry &, Position pos);
+
+void setDead(entt::registry &, entt::entity);

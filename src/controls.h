@@ -10,6 +10,7 @@ struct Controls {
         Up,
         Down,
         Fire,
+        Secondary,
 
         Count,
     };
@@ -21,6 +22,7 @@ struct Controls {
     float rot = 0;
     float throttle = 0;
     bool fire = false;
+    bool secondary = false;
 
     void update(entt::registry &reg) const;
 };

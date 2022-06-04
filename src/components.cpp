@@ -27,6 +27,7 @@ void createPlayer(entt::registry &reg, Position pos) {
     reg.emplace<Visible>(entity, Visible{1, drawShip});
     reg.emplace<Controllable>(entity);
     reg.emplace<Weapon>(entity);
+    reg.emplace<SecondaryWeapon>(entity);
 }
 
 void createProjectile(entt::registry &reg, Position pos, Velocity vel) {
@@ -61,5 +62,11 @@ void createExplosion(entt::registry &reg, Position pos) {
 
         auto dist = std::normal_distribution(0.f, 2.f);
         reg.emplace<Velocity>(entity, dist(gen), dist(gen));
+    }
+}
+
+void setDead(entt::registry &reg, entt::entity entity) {
+    if (!reg.any_of<Dead>(entity)) {
+        reg.emplace<Dead>(entity);
     }
 }

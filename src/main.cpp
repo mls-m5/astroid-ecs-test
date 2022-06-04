@@ -17,6 +17,7 @@ void handleControls(Controls &controls, const sdl::Event &event, bool state) {
         std::pair{SDL_SCANCODE_UP, Controls::Up},
         std::pair{SDL_SCANCODE_DOWN, Controls::Down},
         std::pair{SDL_SCANCODE_SPACE, Controls::Fire},
+        std::pair{SDL_SCANCODE_RETURN, Controls::Secondary},
     };
 
     for (auto &c : map) {

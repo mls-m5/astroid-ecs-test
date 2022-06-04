@@ -14,3 +14,9 @@ For this project, i use a library (kind of out of character for me)
 for handlig the ECS part of the application. For more information check
 
 https://github.com/skypjack/entt
+
+## Controls
+
+Use arrow keys to navigate
+Space is primary fire
+Return is secondary fire

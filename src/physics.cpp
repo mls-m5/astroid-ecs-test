@@ -7,9 +7,6 @@ namespace {
 auto gen = std::mt19937{std::random_device{}()};
 
 void handleCollisions(entt::registry &reg) {
-
-    auto toRemove = std::vector<entt::entity>{};
-
     auto vdist = std::normal_distribution(0.f, 2.f);
 
     auto isCollision = [](Position pos1, Position pos2, float size) {
@@ -27,8 +24,8 @@ void handleCollisions(entt::registry &reg) {
             }
 
             if (isCollision(pos1, pos2, col.size)) {
-                toRemove.push_back(e1);
-                toRemove.push_back(e2);
+                setDead(reg, e1);
+                setDead(reg, e2);
                 proj.damage = 0;
 
                 createExplosion(reg, pos1);
@@ -51,31 +48,31 @@ void handleCollisions(entt::registry &reg) {
         for (auto [e2, pos2, proj] :
              reg.view<Position, Controllable>().each()) {
             if (isCollision(pos1, pos2, 5)) {
-                toRemove.push_back(e1);
-                toRemove.push_back(e2);
+                setDead(reg, e1);
+                setDead(reg, e2);
 
                 createExplosion(reg, pos1);
                 createExplosion(reg, pos2);
             }
         }
     }
-
-    std::sort(toRemove.begin(), toRemove.end());
-    auto it = std::unique(toRemove.begin(), toRemove.end());
-    toRemove.erase(it, toRemove.end());
-    reg.destroy(toRemove.begin(), toRemove.end());
 }
 
-} // namespace
-
-void Physics::update(entt::registry &reg, double t) {
-    for (auto [e, lifetime] : reg.view<Lifetime>().each()) {
-        lifetime.t -= t;
-        if (lifetime.t < 0) {
-            reg.destroy(e);
+void triggerBomb(entt::registry &reg, Position pos) {
+    for (auto [e, col, p] : reg.view<Collidable, Position>().each()) {
+        if (col.size > 3) {
+            continue;
+        }
+        auto dx = p.x - pos.x;
+        auto dy = p.y - pos.y;
+        auto dist2 = dx * dx + dy * dy;
+        if (!reg.any_of<Lifetime>(e)) {
+            reg.emplace<Lifetime>(e, Lifetime{std::sqrt(dist2) / 20.f, true});
         }
     }
+}
 
+void handlePlayer(entt::registry &reg, double t) {
     for (auto [e, con, pos, vel] :
          reg.view<Controllable, Position, Velocity>().each()) {
         auto sx = std::sin(pos.a);
@@ -108,6 +105,32 @@ void Physics::update(entt::registry &reg, double t) {
         weap.currentCooldown = std::min(weap.currentCooldown, weap.cooldown);
     }
 
+    for (auto [e, con, pos, sec] :
+         reg.view<Controllable, Position, SecondaryWeapon>().each()) {
+        if (con.secondary) {
+            //            if (sec.num) {
+            //                sec.num = 0;
+            triggerBomb(reg, pos);
+            //            }
+        }
+    }
+}
+
+} // namespace
+
+void Physics::update(entt::registry &reg, double t) {
+    for (auto [e, lifetime, pos] : reg.view<Lifetime, Position>().each()) {
+        lifetime.t -= t;
+        if (lifetime.t < 0) {
+            if (lifetime.shouldExplode) {
+                createExplosion(reg, pos);
+            }
+            reg.destroy(e);
+        }
+    }
+
+    handlePlayer(reg, t);
+
     for (auto [e, pos, proj] : reg.view<Position, ParticleSmoke>().each()) {
         auto dist = std::normal_distribution<float>{0, 1};
         createParticle(reg, pos, {dist(gen), dist(gen)});
@@ -133,4 +156,9 @@ void Physics::update(entt::registry &reg, double t) {
     }
 
     handleCollisions(reg);
+
+    {
+        auto view = reg.view<Dead>();
+        reg.destroy(view.begin(), view.end());
+    }
 }
