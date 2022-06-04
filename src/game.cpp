@@ -1,4 +1,4 @@
-#include "physics.h"
+#include "game.h"
 #include "components.h"
 #include <random>
 
@@ -118,7 +118,21 @@ void handlePlayer(entt::registry &reg, double t) {
 
 } // namespace
 
-void Physics::update(entt::registry &reg, double t) {
+Game::Game(entt::registry &reg, float width, float height)
+    : _width{width}
+    , _height{height} {
+
+    reg.on_construct<Collidable>().connect<&Game::astroidCreated>(this);
+    reg.on_destroy<Collidable>().connect<&Game::astroidDestroyed>(this);
+
+    startLevel(reg);
+
+    createPlayer(reg, {width / 2.f, height / 2.f});
+
+    reg.on_destroy<Controllable>().connect<&Game::onPlayerDeath>();
+}
+
+void Game::update(entt::registry &reg, double t) {
     for (auto [e, lifetime, pos] : reg.view<Lifetime, Position>().each()) {
         lifetime.t -= t;
         if (lifetime.t < 0) {
@@ -160,5 +174,36 @@ void Physics::update(entt::registry &reg, double t) {
     {
         auto view = reg.view<Dead>();
         reg.destroy(view.begin(), view.end());
+    }
+}
+
+void Game::onPlayerDeath(entt::registry &reg, entt::entity) {
+    createPlayer(reg, {width / 2.f, height / 2.f});
+}
+
+void Game::astroidCreated(entt::registry &, entt::entity) {
+    ++numAstroids;
+}
+
+void Game::astroidDestroyed(entt::registry &reg, entt::entity) {
+    --numAstroids;
+    if (numAstroids == 0) {
+        startLevel(reg);
+    }
+}
+
+void Game::startLevel(entt::registry &registry) {
+    auto gen = std::mt19937{std::random_device{}()};
+    auto xdist = std::uniform_real_distribution(0.f, static_cast<float>(width));
+    auto ydist =
+        std::uniform_real_distribution(0.f, static_cast<float>(height));
+
+    auto dist = std::normal_distribution(0.f, 2.f);
+    auto linear = std::uniform_real_distribution(0.f, 3.14f);
+    for (size_t i = 0; i < 10; ++i) {
+        createAstroid(registry,
+                      Position{xdist(gen), ydist(gen), linear(gen)},
+                      {dist(gen), dist(gen), dist(gen) / 10.f},
+                      {10.f});
     }
 }

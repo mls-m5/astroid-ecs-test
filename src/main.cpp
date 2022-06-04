@@ -2,7 +2,7 @@
 #include "controls.h"
 #include "drawcomponents.h"
 #include "em.h"
-#include "physics.h"
+#include "game.h"
 #include "sdlpp/events.hpp"
 #include "sdlpp/render.hpp"
 #include "sdlpp/window.hpp"
@@ -29,25 +29,6 @@ void handleControls(Controls &controls, const sdl::Event &event, bool state) {
     }
 }
 
-const auto width = 640;
-const auto height = 480;
-
-void startLevel(entt::registry &registry) {
-    auto gen = std::mt19937{std::random_device{}()};
-    auto xdist = std::uniform_real_distribution(0.f, static_cast<float>(width));
-    auto ydist =
-        std::uniform_real_distribution(0.f, static_cast<float>(height));
-
-    auto dist = std::normal_distribution(0.f, 2.f);
-    auto linear = std::uniform_real_distribution(0.f, 3.14f);
-    for (size_t i = 0; i < 10; ++i) {
-        createAstroid(registry,
-                      Position{xdist(gen), ydist(gen), linear(gen)},
-                      {dist(gen), dist(gen), dist(gen) / 10.f},
-                      {10.f});
-    }
-}
-
 using namespace std::chrono;
 
 struct App {
@@ -57,8 +38,7 @@ struct App {
         window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC};
 
     entt::registry registry{};
-    Physics physics{
-        registry, static_cast<float>(width), static_cast<float>(height)};
+    Game game{registry, static_cast<float>(width), static_cast<float>(height)};
     Controls controls{};
 
     high_resolution_clock::time_point lastFrameTime =
@@ -66,11 +46,7 @@ struct App {
 
     bool running = true;
 
-    App() {
-        startLevel(registry);
-
-        createPlayer(registry, {width / 2.f, height / 2.f});
-    }
+    App() {}
 
     void update() {
         for (auto o = sdl::pollEvent(); o; o = sdl::pollEvent()) {
@@ -97,7 +73,7 @@ struct App {
         lastFrameTime = frameTime;
 
         controls.update(registry);
-        physics.update(registry, t);
+        game.update(registry, t);
 
         renderer.drawColor({0, 0, 0, 255});
         renderer.fillRect();

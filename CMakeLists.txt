@@ -8,7 +8,7 @@ add_subdirectory(lib/sdlpp)
 add_executable(
     game-2022-06
     src/main.cpp
-    src/physics.cpp
+    src/game.cpp
     src/components.cpp
     src/drawcomponents.cpp
     src/controls.cpp
