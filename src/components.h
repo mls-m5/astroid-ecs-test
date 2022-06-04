@@ -52,6 +52,11 @@ struct ParticleSmoke {
     float nextT = 0;
 };
 
+struct Weapon {
+    float cooldown = .1;
+    float currentCooldown = cooldown;
+};
+
 void createAstroid(entt::registry &,
                    Position pos,
                    Velocity vel = {},

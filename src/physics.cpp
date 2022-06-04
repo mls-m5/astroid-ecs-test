@@ -80,21 +80,32 @@ void Physics::update(entt::registry &reg, double t) {
          reg.view<Controllable, Position, Velocity>().each()) {
         auto sx = std::sin(pos.a);
         auto sy = std::cos(pos.a);
-        vel.rot = con.rot;
+        vel.rot = con.rot / 2.f;
 
         vel.x += sx * con.throttle * t;
         vel.y += sy * con.throttle * t;
+    }
 
+    for (auto [e, con, pos, vel, weap] :
+         reg.view<Controllable, Position, Velocity, Weapon>().each()) {
         const float projectileSpeed = 10.;
+        auto sx = std::sin(pos.a);
+        auto sy = std::cos(pos.a);
 
         if (con.fire) {
-            createProjectile(reg,
-                             pos,
-                             {
-                                 static_cast<float>(vel.x + sx * 10.),
-                                 static_cast<float>(vel.y + sy * 10.),
-                             });
+            while (weap.currentCooldown > 0) {
+                createProjectile(reg,
+                                 pos,
+                                 {
+                                     static_cast<float>(vel.x + sx * 10.),
+                                     static_cast<float>(vel.y + sy * 10.),
+                                 });
+                weap.currentCooldown -= 1;
+            }
         }
+
+        weap.currentCooldown += t;
+        weap.currentCooldown = std::min(weap.currentCooldown, weap.cooldown);
     }
 
     for (auto [e, pos, proj] : reg.view<Position, ParticleSmoke>().each()) {
