@@ -28,6 +28,12 @@ struct Position {
     Position operator+(Position other) const {
         return {x + other.x, y + other.y};
     }
+
+    void normalize() {
+        auto a = abs();
+        x /= a;
+        y /= a;
+    }
 };
 
 struct Velocity {
@@ -94,6 +100,8 @@ struct Homing {
     Velocity direction;
     float timeLeft = 1;
     float speed = .1;
+    float rnd = 0;
+    float dist = 0;
 };
 
 void createAstroid(entt::registry &,

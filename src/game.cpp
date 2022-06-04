@@ -198,12 +198,18 @@ void Game::update(entt::registry &reg, double t) {
         auto targetPos = reg.get<Position>(homing.target);
         auto d = targetPos - homing.pos;
 
-        auto inv = 1.f - homing.timeLeft;
+        auto tangent = Position{d.y, -d.x};
+        tangent.normalize();
 
+        auto inv = 1.f - homing.timeLeft;
+        auto middleAmount = homing.timeLeft * inv;
+
+        auto angleValue = std::sin(homing.timeLeft * 12.f + homing.rnd);
         pos = homing.pos * homing.timeLeft + targetPos * inv +
-              Position{homing.direction.x, homing.direction.y} *
-                  homing.timeLeft * inv * 100.;
-        pos.a = std::atan2(d.x, d.y);
+              Position{homing.direction.x, homing.direction.y} * middleAmount *
+                  100. +
+              tangent * (middleAmount * angleValue * homing.dist / 10.f);
+        pos.a = std::atan2(d.x, d.y) + angleValue;
     }
 
     handleCollisions(reg);
