@@ -33,5 +33,6 @@ if (EMSCRIPTEN)
         ${PROJECT_NAME}
         PUBLIC
         -s USE_SDL=2
+        --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/shell.html
         )
 endif()
