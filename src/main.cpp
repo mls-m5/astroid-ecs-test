@@ -1,6 +1,7 @@
 #include "components.h"
 #include "controls.h"
 #include "drawcomponents.h"
+#include "em.h"
 #include "physics.h"
 #include "sdlpp/events.hpp"
 #include "sdlpp/render.hpp"
@@ -28,8 +29,8 @@ void handleControls(Controls &controls, const sdl::Event &event, bool state) {
     }
 }
 
-const auto width = 300;
-const auto height = 300;
+const auto width = 640;
+const auto height = 480;
 
 void startLevel(entt::registry &registry) {
     auto gen = std::mt19937{std::random_device{}()};
@@ -47,24 +48,31 @@ void startLevel(entt::registry &registry) {
     }
 }
 
-int main(int argc, char *argv[]) {
-    auto window = sdl::Window{"game", 0, 0, 300, 300, SDL_WINDOW_SHOWN};
-    auto renderer = sdl::Renderer{
+using namespace std::chrono;
+
+struct App {
+
+    sdl::Window window{"game", 0, 0, width, height, SDL_WINDOW_SHOWN};
+    sdl::Renderer renderer{
         window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC};
 
-    auto registry = entt::registry{};
-    auto physics = Physics{
+    entt::registry registry{};
+    Physics physics{
         registry, static_cast<float>(width), static_cast<float>(height)};
-    auto controls = Controls{};
+    Controls controls{};
 
-    startLevel(registry);
+    high_resolution_clock::time_point lastFrameTime =
+        high_resolution_clock::now();
 
-    createPlayer(registry, {width / 2.f, height / 2.f});
+    bool running = true;
 
-    using namespace std::chrono;
-    auto lastFrameTime = high_resolution_clock::now();
+    App() {
+        startLevel(registry);
 
-    for (bool running = true; running;) {
+        createPlayer(registry, {width / 2.f, height / 2.f});
+    }
+
+    void update() {
         for (auto o = sdl::pollEvent(); o; o = sdl::pollEvent()) {
             auto event = *o;
 
@@ -98,6 +106,19 @@ int main(int argc, char *argv[]) {
 
         renderer.present();
     }
+};
+
+int main(int argc, char *argv[]) {
+    static auto app = App{};
+
+#ifdef __EMSCRIPTEN__
+    auto updateFrame = +[]() { app.update(); };
+    emscripten_set_main_loop(updateFrame, 0, 1);
+#else
+    for (; app.running;) {
+        app.update();
+    }
+#endif
 
     return 0;
 }

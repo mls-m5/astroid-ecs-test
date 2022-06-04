@@ -26,3 +26,12 @@ target_link_libraries(
     sdlpp
     EnTT::EnTT
     )
+
+if (EMSCRIPTEN)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    target_link_options(
+        ${PROJECT_NAME}
+        PUBLIC
+        -s USE_SDL=2
+        )
+endif()
