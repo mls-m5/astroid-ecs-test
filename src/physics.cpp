@@ -150,7 +150,7 @@ void Physics::update(entt::registry &reg, double t) {
         if (pos.y < -10.f) {
             pos.y += _height + 10.f;
         }
-        else if (pos.y > _width + 10.f) {
+        else if (pos.y > _height + 10.f) {
             pos.y -= _height + 10.f;
         }
     }
