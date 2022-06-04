@@ -110,7 +110,8 @@ void handlePlayer(entt::registry &reg, double t) {
         if (con.secondary) {
             //            if (sec.num) {
             //                sec.num = 0;
-            triggerBomb(reg, pos);
+            //            triggerBomb(reg, pos);
+            createHomingMissiles(reg, pos, {std::sin(pos.a), std::cos(pos.a)});
             //            }
         }
     }
@@ -167,6 +168,25 @@ void Game::update(entt::registry &reg, double t) {
         else if (pos.y > _height + 10.f) {
             pos.y -= _height + 10.f;
         }
+    }
+
+    for (auto [e, pos, vel, homing] :
+         reg.view<Position, Velocity, Homing>().each()) {
+        if (!reg.valid(homing.target)) {
+            reg.emplace<Dead>(e);
+            continue;
+        }
+
+        homing.timeLeft -= homing.speed * t;
+        auto targetPos = reg.get<Position>(homing.target);
+        auto d = targetPos - homing.pos;
+
+        auto inv = 1.f - homing.timeLeft;
+
+        pos = homing.pos * homing.timeLeft + targetPos * inv +
+              Position{homing.direction.x, homing.direction.y} *
+                  homing.timeLeft * inv * 100.;
+        pos.a = std::atan2(d.x, d.y);
     }
 
     handleCollisions(reg);

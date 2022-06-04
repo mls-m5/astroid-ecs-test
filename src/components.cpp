@@ -70,3 +70,21 @@ void setDead(entt::registry &reg, entt::entity entity) {
         reg.emplace<Dead>(entity);
     }
 }
+
+void createHomingMissiles(entt::registry &reg, Position pos, Velocity vel) {
+    for (auto [e, col, p] : reg.view<Collidable, Position>().each()) {
+        auto d = (pos - p).abs2();
+
+        if (d < 200. * 200.) {
+            auto entity = reg.create();
+
+            reg.emplace<Position>(entity, pos);
+            reg.emplace<Velocity>(entity);
+            reg.emplace<Homing>(
+                entity, Homing{e, pos, vel, 1, 10.f / (std::sqrt(d) + 1)});
+            reg.emplace<Visible>(entity, Visible{1, drawProjectile});
+            reg.emplace<Projectile>(entity);
+            reg.emplace<ParticleSmoke>(entity);
+        }
+    }
+}

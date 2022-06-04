@@ -8,6 +8,26 @@ struct Position {
     float x = 0;
     float y = 0;
     float a = 0;
+
+    Position operator-(Position other) const {
+        return {x - other.x, y - other.y};
+    }
+
+    float abs2() const {
+        return x * x + y * y;
+    }
+
+    float abs() const {
+        return std::sqrt(abs2());
+    }
+
+    Position operator*(float value) const {
+        return {x * value, y * value};
+    }
+
+    Position operator+(Position other) const {
+        return {x + other.x, y + other.y};
+    }
 };
 
 struct Velocity {
@@ -68,6 +88,14 @@ struct Dead {
     char dummy = 0;
 };
 
+struct Homing {
+    entt::entity target;
+    Position pos;
+    Velocity direction;
+    float timeLeft = 1;
+    float speed = .1;
+};
+
 void createAstroid(entt::registry &,
                    Position pos,
                    Velocity vel = {},
@@ -82,3 +110,5 @@ void createParticle(entt::registry &, Position pos, Velocity vel);
 void createExplosion(entt::registry &, Position pos);
 
 void setDead(entt::registry &, entt::entity);
+
+void createHomingMissiles(entt::registry &, Position pos, Velocity vel);
