@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.16)
 project(game-2022-06)
 
 add_subdirectory(lib/entt)
@@ -32,7 +32,8 @@ if (EMSCRIPTEN)
     target_link_options(
         ${PROJECT_NAME}
         PUBLIC
-        -s USE_SDL=2
         --shell-file ${CMAKE_CURRENT_SOURCE_DIR}/shell.html
         )
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_SDL=2")
+
 endif()
